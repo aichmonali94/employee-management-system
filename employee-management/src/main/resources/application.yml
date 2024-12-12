@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: management
+  profiles:
+    active: dev
+  datasource:
+    initialize: false
+
+springdoc:
+  api-docs:
+    #enabled: false
+    path: /api-docs
+    #format: yaml
+  swagger-ui:
+    #url: /swagger/employee-management-api.yml
+    #employee-management-api.ymlenabled: false
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+    io:
+      springfox: DEBUG
+

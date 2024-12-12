@@ -1,0 +1,8 @@
+server:
+  port: 8001
+
+
+employee:
+  database:
+    api:
+      url: http://localhost:9001/database/v1
