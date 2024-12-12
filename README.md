@@ -85,6 +85,12 @@ This project consists of two Spring Boot applications:
    ```
    Role: ADMIN
    ```
+- **Authorization**:
+   ```
+   AuthType: Basic Auth
+   username: user
+   password: user123
+   ```  
 - **Response**:
    ```json
    {
@@ -97,6 +103,16 @@ This project consists of two Spring Boot applications:
 
 #### **2. Get Employee by ID**
 - **Endpoint**: `GET /employee-management/v1/employees/{employeeId}`
+- **Request Header**:
+ ```
+ Role: ADMIN,USER,MANAGER
+ ```
+- **Authorization**:
+ ```
+ AuthType: Basic Auth
+ username: user
+ password: user123
+ ```  
 - **Response**:
    ```json
    {
@@ -109,6 +125,12 @@ This project consists of two Spring Boot applications:
 
 #### **3. Update Employee**
 - **Endpoint**: `PUT /employee-management/v1/employees/{employeeId}`
+- **Authorization**:
+ ```
+ AuthType: Basic Auth
+ username: user
+ password: user123
+ ```  
 - **Request Body**:
    ```json
    {
@@ -118,7 +140,7 @@ This project consists of two Spring Boot applications:
    ```
 - **Request Header**:
    ```
-   Role: USER
+   Role: USER,ADMIN,MANAGER
    ```
 - **Response**:
    ```json
@@ -132,6 +154,16 @@ This project consists of two Spring Boot applications:
 
 #### **4. Delete Employee**
 - **Endpoint**: `DELETE /employee-management/v1/delete/employees/{employeeId}`
+- **Request Header**:
+ ```
+ Role: ADMIN,USER,MANAGER
+ ```
+- **Authorization**:
+ ```
+ AuthType: Basic Auth
+ username: user
+ password: user123
+ ```  
 - **Response**:
    ```json
    {
@@ -264,7 +296,29 @@ The database schema includes the following tables:
    | name       | String |
 
 ---
+### **DDL**
 
+```sql
+INSERT INTO role (role_id, name) VALUES (1,'ADMIN');
+INSERT INTO role (role_id, name) VALUES (2,'USER');
+
+INSERT INTO employee (employee_id, name, role_id) VALUES (101, 'User One', 1);
+INSERT INTO employee (employee_id, name, role_id) VALUES (102, 'User Two', 2);
+
+INSERT INTO project (project_id, name, employee_id) VALUES (1001, 'Project A', 101);
+INSERT INTO project (project_id, name, employee_id) VALUES (1002, 'Project B', 102);
+
+-- Employee Table (Assuming primary key 'id' is auto-created)
+CREATE INDEX idx_employee_roleid ON Employee(role_id);
+
+-- Project Table (Assuming primary key 'id' is auto-created)
+CREATE INDEX idx_project_employee_id ON Project(employee_id);
+
+-- Role Table (Assuming primary key 'id' is auto-created)
+CREATE INDEX idx_role_name ON Role(name);
+```
+
+---
 ### **Stored Procedure**
 
 **Employee-Database** implements a stored procedure to handle the deletion of roles while ensuring the associated employees are deleted and their projects reassigned to a default employee.
@@ -364,4 +418,9 @@ ENTRYPOINT ["java", "-jar", "/employee-database.jar"]
 You can access the OpenAPI documentation for both applications via the following URL:
 
 - **Swagger UI**: [http://localhost:9092/swagger-ui/index.html](http://localhost:9092/swagger-ui/index.html)
+- **Log In Details**:
+ ```
+ username: user
+ password: user123
+ ```  
 
