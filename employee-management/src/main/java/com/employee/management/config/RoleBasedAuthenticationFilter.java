@@ -1,10 +1,13 @@
 package com.employee.management.config;
 
+import com.employee.management.exception.InvalidRoleException;
 import com.employee.management.exception.UnAuthorizedUserException;
+import com.employee.management.validation.EmployeeManagementValidation;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,11 +19,12 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 public class RoleBasedAuthenticationFilter extends OncePerRequestFilter {
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws UnAuthorizedUserException, ServletException, IOException {
 
         String roleHeader = request.getHeader("Role");  // Extract role from header
-
+        
         if (roleHeader != null) {
 
             // Add validation for role if needed (e.g., check if it's a valid role in your system)

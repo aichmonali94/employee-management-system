@@ -4,6 +4,7 @@ import com.employee.management.exception.UnAuthorizedUserException;
 import jakarta.servlet.Filter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -27,12 +28,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests()
-                .requestMatchers("/employee-management/v1/employees").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/employee-management/v1/employees").hasRole("ADMIN")
                 .requestMatchers("/employee-management/v1/employees/{id}").hasAnyRole("ADMIN","USER","MANAGER")
                 .requestMatchers("/employee-management/v1/delete/employees/{id}").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .anyRequest()
+                .authenticated()
                 .and()
-                .httpBasic(withDefaults());
+                .addFilterBefore(new RoleBasedAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                //.httpBasic(withDefaults());
 
         return http.build();
     }
@@ -44,11 +47,10 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder =
-                http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder
-                .inMemoryAuthentication()
-                .withUser("user").password(passwordEncoder().encode("user123")).roles("ADMIN","USER","MANAGER");
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.inMemoryAuthentication()
+                .withUser("user").password(passwordEncoder().encode("user123"));//.roles("USER") // Role USER
+                //.withUser("admin").password(passwordEncoder().encode("admin123")).roles("ADMIN"); // Role ADMIN
         return authenticationManagerBuilder.build();
     }
 

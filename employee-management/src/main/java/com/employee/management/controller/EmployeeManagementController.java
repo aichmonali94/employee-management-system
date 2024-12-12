@@ -32,13 +32,11 @@ public class EmployeeManagementController {
             @ApiResponse(responseCode = "401", description = "Unauthorized - User not allowed"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Access denied for the provided role")
     })
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value="/employees", consumes={MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EmployeeManagementResponseDTO> createEmployee(@RequestBody @Validated EmployeeManagementRequestDTO employeeRequestDTO,
                           @RequestHeader("Role") String role) throws Exception, AccessForbiddenException, UnAuthorizedUserException {
         return new ResponseEntity<>(service.createEmployee(employeeRequestDTO, role), HttpStatus.CREATED);
     }
-
     @Operation(summary = "Retrieve Employee Details by ID", description = "API to retrieve employee information by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully Employee details Fetched"),
@@ -47,11 +45,11 @@ public class EmployeeManagementController {
             @ApiResponse(responseCode = "401", description = "Unauthorized - User not allowed"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Access denied for the provided role")
     })
-    @PreAuthorize("hasRole('ADMIN','USER','MANAGER')")
     @GetMapping(value="/employees/{employeeId}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EmployeeManagementResponseDTO> getEmployeeById(@PathVariable("employeeId") Long employeeId,
                        @RequestHeader("Role") String role){
 
+        System.out.println("Testing"+employeeId+role);
         return new ResponseEntity<>(service.getEmployeeById(employeeId), HttpStatus.OK);
     }
 
@@ -62,7 +60,6 @@ public class EmployeeManagementController {
             @ApiResponse(responseCode = "401", description = "Unauthorized - User not allowed"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Access denied for the provided role")
     })
-    @PreAuthorize("hasRole('ADMIN','USER','MANAGER')")
     @PutMapping(value="/employees/{employeeId}", consumes={MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EmployeeManagementResponseDTO> updateEmployee(@PathVariable("employeeId") Long employeeId,
             @Validated @RequestBody EmployeeManagementRequestDTO employeeRequestDTO,
@@ -78,7 +75,6 @@ public class EmployeeManagementController {
             @ApiResponse(responseCode = "401", description = "Unauthorized - User not allowed"),
             @ApiResponse(responseCode = "403", description = "Forbidden - Access denied for the provided role")
     })
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value="delete/employees/{employeeId}", produces = {MediaType.TEXT_PLAIN_VALUE})
     public ResponseEntity<String> deleteEmployeeById(@PathVariable("employeeId") Long employeeId, @RequestHeader("Role") String role){
         return new ResponseEntity<>(service.deleteEmployee(employeeId), HttpStatus.valueOf(204));
